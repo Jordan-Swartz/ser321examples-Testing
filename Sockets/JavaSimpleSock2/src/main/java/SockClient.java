@@ -15,6 +15,7 @@ class SockClient {
   public static void main (String args[]) {
     Socket sock = null;
     String host = "localhost";
+    //String host = "ec2-18-227-111-64.us-east-2.compute.amazonaws.com";
     String message = "HI";
     Integer number = 100;
 
