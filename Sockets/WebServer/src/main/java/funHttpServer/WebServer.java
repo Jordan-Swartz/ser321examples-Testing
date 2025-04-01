@@ -236,22 +236,54 @@ class WebServer {
 
           /*Updated Implementation*/
           try {
+            Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+            //extract path parameters
+            query_pairs = splitQuery(request.replace("github?", ""));
+            String query = query_pairs.get("query");
 
+            //if missing parameter
+            if (query == null || query.isEmpty()) {
+              builder.append("HTTP/1.1 400 Bad Request\n");
+              builder.append("Content-Type: text/html; charset=utf-8\n\n");
+              builder.append("Error: Missing 'query' parameter.");
+            } else {
+              String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
+
+              //verify json
+              if (json == null || json.isEmpty()) {
+                builder.append("HTTP/1.1 502 Bad Gateway\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n\n");
+                builder.append("Error: Failed to fetch data from GitHub.");
+            } else {
+                //parse json
+                ArrayList<String> results = new ArrayList<>();
+                String[] objects = json.split("\\{");
+
+                for (String obj : objects) {
+                  if (obj.contains("\"full_name\"") && obj.contains("\"id\"") && obj.contains("\"owner\"")) {
+                    //extract values
+                    String fullName = extractJsonValue(obj, "full_name");
+                    String id = extractJsonValue(obj, "id");
+                    String login = extractJsonValue(obj, "login");
+
+                    results.add("<p><b>Repo:</b> " + fullName + " | <b>ID:</b> " + id + " | <b>Owner:</b> " + login + "</p>");
+                  }
+                }
+
+                builder.append("HTTP/1.1 200 OK\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n\n");
+                builder.append("<html><body><h2>GitHub Repository Results</h2>");
+                for (String line : results) {
+                  builder.append(line);
+                }
+                builder.append("</body></html>");
+              }
+            }
           } catch (Exception e) {
-
+            builder.append("HTTP/1.1 500 Internal Server Error\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n\n");
+            builder.append("Error: GitHub query failed - ").append(e.getMessage());
           }
-
-          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          query_pairs = splitQuery(request.replace("github?", ""));
-          String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
-          System.out.println(json);
-
-          builder.append("HTTP/1.1 200 OK\n");
-          builder.append("Content-Type: text/html; charset=utf-8\n");
-          builder.append("\n");
-          builder.append("Check the todos mentioned in the Java source file");
-          // TODO: Parse the JSON returned by your fetch and create an appropriate
-          // response based on what the assignment document asks for
 
         } else {
           // if the request is not recognized at all
@@ -259,7 +291,7 @@ class WebServer {
           builder.append("HTTP/1.1 400 Bad Request\n");
           builder.append("Content-Type: text/html; charset=utf-8\n");
           builder.append("\n");
-          builder.append("I am not sure what you want me to do...");
+          builder.append("I cannot proccess that request :(");
         }
 
         // Output
@@ -273,7 +305,18 @@ class WebServer {
     return response;
   }
 
-  /**
+private String extractJsonValue(String source, String key) {
+  int index = source.indexOf("\"" + key + "\"");
+  if (index == -1) return "N/A";
+  int start = source.indexOf(":", index) + 1;
+  int end = source.indexOf(",", start);
+  if (end == -1) end = source.indexOf("}", start);
+  String value = source.substring(start, end).replaceAll("[\"{}]", "").trim();
+  return value;
+}
+
+
+/**
    * Method to read in a query and split it up correctly
    * @param query parameters on path
    * @return Map of all parameters and their specific values
