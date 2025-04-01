@@ -1,15 +1,41 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-	</head>
-	<body>
-		<h3>You can make the following GET requests<h3>
-		<ul>
-			<li>/file/sample.html -- returns the content of the file sample.html</li>
-			<li>/json -- returns a json of the /random request</a></li>
-			<li>/random -- returns index.html</a></li>
-		</ul>
-		<h3>File Structure in www (you can use /file/www/FILENAME):</h3>
-		${links}
-	</body>
+<head>
+	<title>Jordan's Server</title>
+	<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+</head>
+<body>
+<h3>You can make the following GET requests</h3>
+<ul>
+	<li>/file/sample.html -- returns the content of the file sample.html</li>
+	<li>/json -- returns a json of the /random request</li>
+	<li>/random -- returns index.html</li>
+	<li>/multiply?num1=3&num2=4 -- multiplies two numbers</li>
+	<li>/github?query=users/amehlhase316/repos -- lists public GitHub repos</li>
+	<li>/greet?name=Jordan&lang=en -- returns a personalized greeting</li>
+	<li>/repeat?text=Hi&times=3 -- repeats the given text</li>
+</ul>
+
+<hr>
+<h4>New Custom Requests:</h4>
+<ul>
+	<li>
+		<code>/greet?name=Jordan&lang=en</code> → returns a personalized greeting.<br>
+		<i>Examples:</i><br>
+		- <code>/greet?name=Jordan&lang=es</code> → Hola, Jordan!<br>
+		- <code>/greet?name=Alex&lang=fr</code> → Bonjour, Alex!
+	</li>
+	<br>
+	<li>
+		<code>/repeat?text=Hi&times=3</code> → repeats the given text that number of times.<br>
+		<i>Examples:</i><br>
+		- <code>/repeat?text=Go&times=3</code> → Go Go Go<br>
+		- <code>/repeat?text=Yes&times=2</code> → Yes Yes
+	</li>
+</ul>
+
+<hr>
+<h3>File Structure in www (you can use /file/www/FILENAME):</h3>
+${links}
+</body>
 </html>
