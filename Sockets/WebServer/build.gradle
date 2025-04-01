@@ -25,3 +25,12 @@ task FunWebServer(type: JavaExec) {
 }
 
 
+task MyWebServer(type: JavaExec) {
+  group 'http'
+  description 'Custom Web Server with Extra Features'
+
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'myWebServer.MyWebServer'
+  standardInput = System.in
+}
